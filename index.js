@@ -20,7 +20,7 @@ var isDead = false;
 var score = 0;
 
 var FPS = 0;
-var frameCount = 0
+var frameCount = 0;
 
 
 for(i = 0; i <= canvas.width - cellSize; i+=cellSize) {
@@ -168,7 +168,7 @@ function FMODMMain() {
         ctx.font = "20px 'Pixeloid'";
         ctx.fillStyle = 'green';
         ctx.textAlign = 'right';
-        const scoreS = String("Score: "+score);
+        var scoreS = String("Score: "+score);
         ctx.fillText(scoreS, canvas.width-scoreS.length, 20);
         ctx.closePath();
 
@@ -228,10 +228,10 @@ function keyHandler(evt) {
     } else if((evt.key == 'ArrowUp' || evt.key == 'Up' || evt.key == 'KeyW' || evt.key == 'w') && direction != 'top') {
         directionQueue = 'up';
     }
-};
-document.addEventListener('keydown', keyHandler, false)
+}
+document.addEventListener('keydown', keyHandler, false);
 
-setInterval(countFPS, 1000)
+setInterval(countFPS, 1000);
 
 direction = 'down';
 directionQueue = 'down';
