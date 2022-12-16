@@ -1,71 +1,54 @@
-var 
-canvas = document.getElementById('canvas'),
-ctx = canvas.getContext('2d'),
-scoreIs = document.getElementById('score'),
-direction = '',
-directionQueue = '',
-fps = 70,
-snake = [],
-snakeLength = 5,
-cellSize = 20,
-snakeColor = '#3498db',
-foodColor = '#ff3636',
-foodX = [],
-foodY = [],
-food = {
+
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+
+var direction = '';
+var directionQueue = '';
+var snake = [];
+var snakeLength = 10;
+var cellSize = 5;
+
+var pointX = [];
+var pointY = [];
+var point = {
 	x: 0, 
 	y: 0
-},
-score = 0,
-hit = new Audio('hit.wav');
-pick = new Audio('pick.wav');
+};
+
+var isDead = false;
+
+var score = 0;
+
 // pushes possible x and y positions to seperate arrays
 for(i = 0; i <= canvas.width - cellSize; i+=cellSize) {
-	foodX.push(i);
-	foodY.push(i);
+	pointX.push(i);
+	pointY.push(i);
 }
-// makes canvas interactive upon load
-canvas.setAttribute('tabindex',1);
-canvas.style.outline = 'none';
-canvas.focus();
+
 // draws a square.. obviously
 function drawSquare(x,y,color) {
+    ctx.beginPath();
 	ctx.fillStyle = color;
 	ctx.fillRect(x, y, cellSize, cellSize);	
+    ctx.closePath();
 }
-// giving the food object its coordinates
-function createFood() { 
-	food.x = foodX[Math.floor(Math.random()*foodX.length)]; // random x position from array
-	food.y = foodY[Math.floor(Math.random()*foodY.length)]; // random y position from array
+// giving the point object its coordinates
+function createpoint() { 
+	point.x = pointX[Math.floor(Math.random()*pointX.length)]; // random x position from array
+	point.y = pointY[Math.floor(Math.random()*pointY.length)]; // random y position from array
 	// looping through the snake and checking if there is a collision
 	for(i = 0; i < snake.length; i++) {
-		if(checkCollision(food.x, food.y, snake[i].x, snake[i].y)) {
-			createFood(); 
+		if(checkCollision(point.x, point.y, snake[i].x, snake[i].y)) {
+			createpoint(); 
 		}
 	}
 }
-// drawing food on the canvas
-function drawFood() {
-	drawSquare(food.x, food.y, foodColor);
+
+// drawing point on the canvas
+function drawpoint() {
+	drawSquare(point.x, point.y, 'green');
 }
-// setting the colors for the canvas. color1 - the background, color2 - the line color
-function setBackground(color1, color2) {
-	ctx.fillStyle = color1;
-	ctx.strokeStyle = color2;
 
-	ctx.fillRect(0, 0, canvas.height, canvas.width);
-
-	for(var x = 0.5; x < canvas.width; x += cellSize) {
-		ctx.moveTo(x, 0);
-		ctx.lineTo(x, canvas.height);
-	}
-	for(var y = 0.5; y < canvas.height; y += cellSize) {
-		ctx.moveTo(0, y);
-		ctx.lineTo(canvas.width, y);
-	}
-
-	ctx.stroke()
-}
 // creating the snake and pushing coordinates to the array
 function createSnake() {
 	snake = [];
@@ -74,23 +57,16 @@ function createSnake() {
 		snake.push({x: k, y:0});
 	}
 }
+
 // loops through the snake array and draws each element
 function drawSnake() {
 	for(i = 0; i < snake.length; i++) {
-		drawSquare(snake[i].x, snake[i].y, snakeColor);
+		drawSquare(snake[i].x, snake[i].y, 'green');
 	}
 }
-// keyboard interactions | direction != '...' doesn't let the snake go backwards
-function changeDirection(keycode) {
-	if(keycode == 37 && direction != 'right') { directionQueue = 'left'; }
-	else if(keycode == 38 && direction != 'down') { directionQueue = 'up'; }
-	else if(keycode == 39 && direction != 'left') { directionQueue = 'right'; }
-	else if(keycode == 40 && direction != 'top') { directionQueue = 'down' }
-}
-// changing the snake's movement
+
 function moveSnake() {
-	var x = snake[0].x; // getting the head coordinates...hhehehe... getting head..
-  // anyway... read on...
+	var x = snake[0].x;
 	var y = snake[0].y;
 
 	direction = directionQueue;
@@ -125,63 +101,73 @@ function checkCollision(x1,y1,x2,y2) {
 // main game loop
 function game(){
 	var head = snake[0];
-	// checking for wall collisions
-	if(head.x < 0 || head.x > canvas.width - cellSize  || head.y < 0 || head.y > canvas.height - cellSize) {
-		hit.play();
-		setBackground();
-		createSnake();
-		drawSnake();
-		createFood();
-		drawFood();
-		directionQueue = 'right';
-		score = 0;
-	}
-	// checking for colisions with snake's body
-	for(i = 1; i < snake.length; i++) {
-		if(head.x == snake[i].x && head.y == snake[i].y) {
-			hit.play(); // playing sounds
-			setBackground();
-			createSnake();
-			drawSnake();
-			createFood();
-			drawFood();
-			directionQueue = 'right';
-			score = 0;
-		}
-	}
-	// checking for collision with food
-	if(checkCollision(head.x, head.y, food.x, food.y)) {
-		snake[snake.length] = {x: head.x, y: head.y};
-		createFood();
-		drawFood();
-		pick.play();
-		score += 10;
-	}
-
-	canvas.onkeydown = function(evt) {
-		evt = evt || window.event;
-		changeDirection(evt.keyCode);
-	};
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
 
     ctx.beginPath();
-    setBackground('#fff', '#eee');
-    scoreIs.innerHTML = score;
+    ctx.font = "20px 'Pixeloid'";
+    ctx.fillStyle = 'green';
+    ctx.textAlign = 'right';
+    const scoreS = String("Score: "+score);
+    ctx.fillText(scoreS, canvas.width-scoreS.length, 20);
+    ctx.closePath();
+
+	if(head.x < 0 || head.x > canvas.width - cellSize  || head.y < 0 || head.y > canvas.height - cellSize) {
+        isDead = true;
+	}
+
+	for(i = 1; i < snake.length; i++) {
+		if(head.x == snake[i].x && head.y == snake[i].y) {
+            isDead = true;
+		}
+	}
+
+	if(checkCollision(head.x, head.y, point.x, point.y)) {
+		snake[snake.length] = {x: head.x, y: head.y};
+		createpoint();
+		drawpoint();
+		score++;
+	}
+
     drawSnake();
-    drawFood();
-    moveSnake();
+    drawpoint();
+
+    if (isDead) {
+        ctx.beginPath();
+        ctx.font = "40px 'Pixeloid'";
+        ctx.fillStyle = 'green';
+        ctx.textAlign = 'center';
+        ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2);
+        ctx.closePath();
+    } else {
+        moveSnake();
+    }
+
+    requestAnimationFrame(game);
 }
+
+function keyHandler(evt) {
+    evt = evt || window.event;
+    if((evt.key == 'ArrowRight' || evt.key == 'Right' || evt.key == 'KeyD' || evt.key == 'd') && direction != 'right') { 
+        directionQueue = 'right';
+    } else if((evt.key == 'ArrowDown' || evt.key == 'Down' || evt.key == 'KeyS' || evt.key == 's')  && direction != 'down') { 
+        directionQueue = 'down';
+    } else if((evt.key == 'ArrowLeft' || evt.key == 'Left' || evt.key == 'KeyA' || evt.key == 'a') && direction != 'left') {
+        directionQueue = 'left';
+    } else if((evt.key == 'ArrowUp' || evt.key == 'Up' || evt.key == 'KeyW' || evt.key == 'w') && direction != 'top') {
+        directionQueue = 'up';
+    }
+};
+document.addEventListener('keydown', keyHandler, false)
+
+
 function newGame() {
 	direction = 'right'; // initial direction
 	directionQueue = 'right';
 	ctx.beginPath();
 	createSnake();
-	createFood();
+	createpoint();
 
-	if(typeof loop != 'undefined') {
-		clearInterval(loop);
-	}
-	else {
-		loop = setInterval(game, fps);
-	}
+	game();
+
 }
 newGame();

@@ -2,25 +2,32 @@
     margin: 0;
     padding: 0;
 }
+
+@font-face {
+    font-family: "Pixeloid";
+    src: url(./assets/fonts/PixeloidSans-nR3g1.ttf);
+}
+
 html {
     height: 100%;
 }
+
 body {
-    background: -webkit-linear-gradient(top, #7fc5c9, #deabbe);
+    background: black;
     text-align: center;
-}
-.score {
-    font-family: verdana;
+    font-family: 'Pixeloid';
     font-size: 2em;
     position: relative;
-    color: #fff;
+    color: green;
 }
+
 canvas {
     display: block;
     position: absolute;
     margin: auto;
-    top: 0;
+    top: 120;
     bottom: 0;
     right: 0;
     left: 0;
+    border-style: solid;
 }
