@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{9fb2750d-d72e-41e1-b2d0-26a404e9fd63}">
+		<property name="assetPath">
+			<value>SFX/boop.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.15673469387755101</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{9f4c0c03-5969-4464-986f-db8ebcce217e}</destination>
+		</relationship>
+	</object>
+</objects>

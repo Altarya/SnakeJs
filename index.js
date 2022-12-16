@@ -19,6 +19,9 @@ var isDead = false;
 
 var score = 0;
 
+var FPS = 0;
+var frameCount = 0
+
 // pushes possible x and y positions to seperate arrays
 for(i = 0; i <= canvas.width - cellSize; i+=cellSize) {
 	pointX.push(i);
@@ -45,7 +48,7 @@ function createpoint() {
 }
 
 // drawing point on the canvas
-function drawpoint() {
+function makePoint() {
 	drawSquare(point.x, point.y, 'green');
 }
 
@@ -59,7 +62,7 @@ function createSnake() {
 }
 
 // loops through the snake array and draws each element
-function drawSnake() {
+function makeSnake() {
 	for(i = 0; i < snake.length; i++) {
 		drawSquare(snake[i].x, snake[i].y, 'green');
 	}
@@ -98,51 +101,125 @@ function checkCollision(x1,y1,x2,y2) {
 		return false;
 	}
 }
-// main game loop
-function game(){
-	var head = snake[0];
-    ctx.clearRect(0, 0, canvas.width, canvas.height)
 
-    ctx.beginPath();
-    ctx.font = "20px 'Pixeloid'";
-    ctx.fillStyle = 'green';
-    ctx.textAlign = 'right';
-    const scoreS = String("Score: "+score);
-    ctx.fillText(scoreS, canvas.width-scoreS.length, 20);
-    ctx.closePath();
+function countFPS() {
+    FPS = frameCount;
+    frameCount = 0;
+}
 
-	if(head.x < 0 || head.x > canvas.width - cellSize  || head.y < 0 || head.y > canvas.height - cellSize) {
-        isDead = true;
-	}
+var FMOD = {}; 
+FMOD['TOTAL_MEMORY'] = 24 * 1024 * 1024;
+FMOD['preRun'] = FMODpreRun;
+FMOD['onRuntimeInitialized'] = FMODMMain;
+FMODModule(FMOD); 
 
-	for(i = 1; i < snake.length; i++) {
-		if(head.x == snake[i].x && head.y == snake[i].y) {
-            isDead = true;
-		}
-	}
+function FMODpreRun() {
+	console.log('FMOD preRun. Mounting files...');
+	FMOD.FS_createPreloadedFile('/', 'Master.bank', './assets/sound/FMOD/Build/Desktop/Master.bank', true, false);
+	FMOD.FS_createPreloadedFile('/', 'Master.strings.bank', './assets/sound/FMOD/Build/Desktop/Master.strings.bank', true, false);
+    FMOD.FS_createPreloadedFile('/', 'SFX.bank', './assets/sound/FMOD/Build/Desktop/SFX.bank', true, false);
+}
 
-	if(checkCollision(head.x, head.y, point.x, point.y)) {
-		snake[snake.length] = {x: head.x, y: head.y};
-		createpoint();
-		drawpoint();
-		score++;
-	}
+function CHECK_RESULT(result)
+{
+    if (result != FMOD.OK)
+    {
+        var msg = "Error!!! '" + FMOD.ErrorString(result) + "'";
 
-    drawSnake();
-    drawpoint();
+        alert(msg);
 
-    if (isDead) {
+        throw msg;
+    }
+}
+
+function FMODMMain() {
+    /*let outval = {};
+    var system;
+    result = FMOD.Studio_System_Create(outval);
+    CHECK_RESULT(result);
+
+    system = outval.val;
+
+    system.setDSPBufferSize(2048, 2);
+	system.initialize(128, FMOD.STUDIO_INITFLAGS.NORMAL, null);
+
+	system.loadBankFile('Master.bank', FMOD.STUDIO_LOAD_BANK_FLAGS.NORMAL, outval);
+	system.loadBankFile('Master.strings.bank', FMOD.STUDIO_LOAD_BANK_FLAGS.NORMAL, outval);
+    system.loadBankFile('SFX.bank', FMOD.STUDIO_LOAD_BANK_FLAGS.NORMAL, outval);
+
+	system.getEvent('event:/boop', outval);
+	let desc = outval.val;
+	desc.createInstance(outval);
+	let inst = outval.val;
+	inst.start();
+
+    function playSound(sound) {
+        system.getEvent(sound, outval);
+        let desc = outval.val;
+        desc.createInstance(outval);
+        let inst = outval.val;
+        inst.start();
+    }
+    
+    setInterval(() => {
+		system.update()
+	}, 1000/60)*/
+
+    function drawLoop(){
+        var head = snake[0];
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
         ctx.beginPath();
-        ctx.font = "40px 'Pixeloid'";
+        ctx.font = "20px 'Pixeloid'";
         ctx.fillStyle = 'green';
-        ctx.textAlign = 'center';
-        ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2);
+        ctx.textAlign = 'right';
+        const scoreS = String("Score: "+score);
+        ctx.fillText(scoreS, canvas.width-scoreS.length, 20);
         ctx.closePath();
-    } else {
-        moveSnake();
+
+        ctx.beginPath();
+        ctx.font = "20px 'Pixeloid'";
+        ctx.fillStyle = 'green';
+        ctx.textAlign = 'left';
+        ctx.fillText("FPS: "+FPS, 10, 20);
+        ctx.closePath();
+
+        if(head.x < 0 || head.x > canvas.width - cellSize  || head.y < 0 || head.y > canvas.height - cellSize) {
+            isDead = true;
+        }
+
+        for(i = 1; i < snake.length; i++) {
+            if(head.x == snake[i].x && head.y == snake[i].y) {
+                isDead = true;
+            }
+        }
+
+        if(checkCollision(head.x, head.y, point.x, point.y)) {
+            snake[snake.length] = {x: head.x, y: head.y};
+            createpoint();
+            score++;
+        }
+
+        makeSnake();
+        makePoint();
+
+        if (isDead) {
+            ctx.beginPath();
+            ctx.font = "40px 'Pixeloid'";
+            ctx.fillStyle = 'green';
+            ctx.textAlign = 'center';
+            ctx.fillText("GAME OVER", canvas.width/2, canvas.height/2);
+            ctx.closePath();
+        } else {
+            moveSnake();
+        }
+
+        frameCount++;
+
+        requestAnimationFrame(drawLoop);
     }
 
-    requestAnimationFrame(game);
+    drawLoop();
 }
 
 function keyHandler(evt) {
@@ -159,15 +236,10 @@ function keyHandler(evt) {
 };
 document.addEventListener('keydown', keyHandler, false)
 
+setInterval(countFPS, 1000)
 
-function newGame() {
-	direction = 'right'; // initial direction
-	directionQueue = 'right';
-	ctx.beginPath();
-	createSnake();
-	createpoint();
-
-	game();
-
-}
-newGame();
+direction = 'down';
+directionQueue = 'down';
+ctx.beginPath();
+createSnake();
+createpoint();
