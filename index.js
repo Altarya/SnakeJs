@@ -1,9 +1,9 @@
-
 var canvas = document.getElementById('canvas');
 var ctx = canvas.getContext('2d');
 
 var direction = '';
 var directionQueue = '';
+
 var snake = [];
 var snakeLength = 10;
 var cellSize = 5;
@@ -22,24 +22,22 @@ var score = 0;
 var FPS = 0;
 var frameCount = 0
 
-// pushes possible x and y positions to seperate arrays
+
 for(i = 0; i <= canvas.width - cellSize; i+=cellSize) {
 	pointX.push(i);
 	pointY.push(i);
 }
 
-// draws a square.. obviously
 function drawSquare(x,y,color) {
     ctx.beginPath();
 	ctx.fillStyle = color;
 	ctx.fillRect(x, y, cellSize, cellSize);	
     ctx.closePath();
 }
-// giving the point object its coordinates
+
 function createpoint() { 
-	point.x = pointX[Math.floor(Math.random()*pointX.length)]; // random x position from array
-	point.y = pointY[Math.floor(Math.random()*pointY.length)]; // random y position from array
-	// looping through the snake and checking if there is a collision
+	point.x = pointX[Math.floor(Math.random()*pointX.length)];
+	point.y = pointY[Math.floor(Math.random()*pointY.length)];
 	for(i = 0; i < snake.length; i++) {
 		if(checkCollision(point.x, point.y, snake[i].x, snake[i].y)) {
 			createpoint(); 
@@ -47,12 +45,10 @@ function createpoint() {
 	}
 }
 
-// drawing point on the canvas
 function makePoint() {
 	drawSquare(point.x, point.y, 'green');
 }
 
-// creating the snake and pushing coordinates to the array
 function createSnake() {
 	snake = [];
 		for(var i = snakeLength; i > 0; i--) {
@@ -61,7 +57,6 @@ function createSnake() {
 	}
 }
 
-// loops through the snake array and draws each element
 function makeSnake() {
 	for(i = 0; i < snake.length; i++) {
 		drawSquare(snake[i].x, snake[i].y, 'green');
@@ -86,13 +81,13 @@ function moveSnake() {
 	else if(direction == 'down') {
 		y+=cellSize;
 	}
-	// removes the tail and makes it the new head...very delicate, don't touch this
+
 	var tail = snake.pop(); 
 	tail.x = x;
 	tail.y = y;
 	snake.unshift(tail);
 }
-// checks if too coordinates match up
+p
 function checkCollision(x1,y1,x2,y2) {
 	if(x1 == x2 && y1 == y2) {
 		return true;
