@@ -115,9 +115,9 @@ FMODModule(FMOD);
 
 function FMODpreRun() {
 	console.log('FMOD preRun. Mounting files...');
-	FMOD.FS_createPreloadedFile('/', 'Master.bank', './assets/sound/FMOD/Build/Desktop/Master.bank', true, false);
-	FMOD.FS_createPreloadedFile('/', 'Master.strings.bank', './assets/sound/FMOD/Build/Desktop/Master.strings.bank', true, false);
-    FMOD.FS_createPreloadedFile('/', 'SFX.bank', './assets/sound/FMOD/Build/Desktop/SFX.bank', true, false);
+	//FMOD.FS_createPreloadedFile('/', 'Master.bank', './assets/sound/FMOD/Build/Desktop/Master.bank', true, false);
+	//FMOD.FS_createPreloadedFile('/', 'Master.strings.bank', './assets/sound/FMOD/Build/Desktop/Master.strings.bank', true, false);
+    //FMOD.FS_createPreloadedFile('/', 'SFX.bank', './assets/sound/FMOD/Build/Desktop/SFX.bank', true, false);
 }
 
 function CHECK_RESULT(result)
