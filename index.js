@@ -162,7 +162,7 @@ function FMODMMain() {
 
     function drawLoop(){
         var head = snake[0];
-        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         ctx.beginPath();
         ctx.font = "20px 'Pixeloid'";
